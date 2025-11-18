@@ -5,8 +5,16 @@ require('dotenv').config();
 
 const app = express();
 
+// CORS Configuration - Allow all origins for production
+const corsOptions = {
+  origin: '*', // Allow all origins (you can restrict this to specific domains in production)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // MongoDB Connection
@@ -50,12 +58,35 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
+// Root route - Server status
+app.get('/', (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+  res.json({
+    status: 'OK',
+    message: 'Companies Directory API Server is Running',
+    version: '1.0.0',
+    database: dbStatus,
+    endpoints: {
+      health: '/api/health',
+      companies: '/api/companies',
+      filters: '/api/companies/filters'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Routes
 app.use('/api/companies', require('./routes/companies'));
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
+  const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+  res.json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
 });
 
 const PORT = process.env.PORT || 5000;

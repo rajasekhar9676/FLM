@@ -92,8 +92,14 @@ NODE_ENV=development
 
 Example: `mongodb+srv://abc:abc@cluster0.vlb04hq.mongodb.net/companies_directory?appName=Cluster0`
 
-For the frontend, create a `.env` file in the `flm` directory (optional):
+For the frontend, create a `.env` file in the `flm` directory:
 
+**For Production (using Render backend):**
+```env
+REACT_APP_API_URL=https://flm-7yrn.onrender.com/api
+```
+
+**For Local Development:**
 ```env
 REACT_APP_API_URL=http://localhost:5000/api
 ```
@@ -229,6 +235,40 @@ flm/
 - Component-based architecture
 - Material UI theming
 - Responsive design with MUI Grid system
+
+## Deployment
+
+### Backend (Render)
+
+The backend is deployed on Render at: `https://flm-7yrn.onrender.com/`
+
+**Server Status:**
+- Root URL: `https://flm-7yrn.onrender.com/` - Shows server status and API information
+- Health Check: `https://flm-7yrn.onrender.com/api/health` - Health check endpoint
+- API Base: `https://flm-7yrn.onrender.com/api` - All API endpoints
+
+**Environment Variables on Render:**
+- `PORT` - Automatically set by Render
+- `MONGODB_URI` - Your MongoDB Atlas connection string
+- `NODE_ENV` - Set to `production`
+
+### Frontend
+
+Update the `.env` file in the `flm` directory to point to your Render backend:
+
+```env
+REACT_APP_API_URL=https://flm-7yrn.onrender.com/api
+```
+
+Then build and deploy:
+```bash
+cd flm
+npm run build
+```
+
+Deploy the `build` folder to your hosting service (Vercel, Netlify, etc.)
+
+See `backend/DEPLOYMENT.md` for detailed deployment instructions.
 
 ## Future Enhancements
 
