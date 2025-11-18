@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useRef } from 'react';
 
 const CompanyContext = createContext();
 
@@ -68,6 +68,12 @@ function companyReducer(state, action) {
 
 export function CompanyProvider({ children }) {
   const [state, dispatch] = useReducer(companyReducer, initialState);
+  const stateRef = useRef(state);
+  
+  // Keep stateRef in sync with state
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   // Fetch filter options
   const fetchFilters = useCallback(async () => {
@@ -92,7 +98,8 @@ export function CompanyProvider({ children }) {
   const fetchCompanies = useCallback(async (params = {}) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const searchParams = { ...state.searchParams, ...params };
+      // Use ref to get current state without creating dependency
+      const searchParams = { ...stateRef.current.searchParams, ...params };
       const queryParams = new URLSearchParams();
       
       Object.keys(searchParams).forEach(key => {
@@ -119,7 +126,10 @@ export function CompanyProvider({ children }) {
           pagination: data.pagination
         }
       });
-      dispatch({ type: 'UPDATE_SEARCH_PARAMS', payload: params });
+      // Only update search params if params were provided
+      if (Object.keys(params).length > 0) {
+        dispatch({ type: 'UPDATE_SEARCH_PARAMS', payload: params });
+      }
     } catch (error) {
       console.error('Error fetching companies:', error);
       console.error('API URL:', API_BASE_URL);
@@ -135,7 +145,7 @@ export function CompanyProvider({ children }) {
         payload: errorMessage
       });
     }
-  }, [state.searchParams]);
+  }, []);
 
   useEffect(() => {
     fetchFilters();
