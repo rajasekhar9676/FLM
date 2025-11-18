@@ -3,7 +3,7 @@ import {
   Business as BusinessIcon,
   LocationOn as LocationIcon,
   People as PeopleIcon,
-  CalendarToday as CalendarToday,
+  CalendarToday,
   OpenInNew as OpenInNewIcon,
   TrendingUp as TrendingUpIcon
 } from '@mui/icons-material';

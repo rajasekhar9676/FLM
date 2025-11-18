@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 
 const CompanyContext = createContext();
 
@@ -70,7 +70,7 @@ export function CompanyProvider({ children }) {
   const [state, dispatch] = useReducer(companyReducer, initialState);
 
   // Fetch filter options
-  const fetchFilters = async () => {
+  const fetchFilters = useCallback(async () => {
     try {
       console.log('Fetching filters from:', `${API_BASE_URL}/companies/filters`);
       const response = await fetch(`${API_BASE_URL}/companies/filters`);
@@ -86,10 +86,10 @@ export function CompanyProvider({ children }) {
       // Set empty filters on error so UI doesn't break
       dispatch({ type: 'SET_FILTERS', payload: { industries: [], countries: [], cities: [] } });
     }
-  };
+  }, []);
 
   // Fetch companies
-  const fetchCompanies = async (params = {}) => {
+  const fetchCompanies = useCallback(async (params = {}) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const searchParams = { ...state.searchParams, ...params };
@@ -135,12 +135,12 @@ export function CompanyProvider({ children }) {
         payload: errorMessage
       });
     }
-  };
+  }, [state.searchParams]);
 
   useEffect(() => {
     fetchFilters();
     fetchCompanies();
-  }, []);
+  }, [fetchFilters, fetchCompanies]);
 
   const updateFilters = (newParams) => {
     fetchCompanies({ ...newParams, page: 1 });

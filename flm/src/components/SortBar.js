@@ -9,10 +9,6 @@ function SortBar() {
     changeSort(e.target.value, searchParams.sortOrder);
   };
 
-  const handleSortOrderChange = (e) => {
-    changeSort(searchParams.sortBy, e.target.value);
-  };
-
   const toggleSortOrder = () => {
     const newOrder = searchParams.sortOrder === 'asc' ? 'desc' : 'asc';
     changeSort(searchParams.sortBy, newOrder);
